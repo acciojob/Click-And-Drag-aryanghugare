@@ -66,34 +66,66 @@
 
 
 	const items = document.querySelectorAll(".item");
+const container = document.querySelector(".items");
 
 let currentItem = null;
 let isDragging = false;
+
 let offsetX = 0;
 let offsetY = 0;
 
-items.forEach((item) => {
+
+/* MOUSE DOWN */
+items.forEach(item => {
 
   item.addEventListener("mousedown", (e) => {
+
     isDragging = true;
     currentItem = item;
 
-    offsetX = e.clientX - item.offsetLeft;
-    offsetY = e.clientY - item.offsetTop;
+    const itemRect = item.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
 
-    item.style.position = "absolute"; // important
+    // Calculate offset
+    offsetX = e.clientX - itemRect.left;
+    offsetY = e.clientY - itemRect.top;
+
+    // Convert to absolute without moving visually
+    item.style.position = "absolute";
+    item.style.left = (itemRect.left - containerRect.left) + "px";
+    item.style.top = (itemRect.top - containerRect.top) + "px";
     item.style.zIndex = 1000;
+
   });
 
 });
 
+
+/* MOUSE MOVE */
 document.addEventListener("mousemove", (e) => {
+
   if (!isDragging || !currentItem) return;
 
-  currentItem.style.left = (e.clientX - offsetX) + "px";
-  currentItem.style.top  = (e.clientY - offsetY) + "px";
+  const containerRect = container.getBoundingClientRect();
+
+  let x = e.clientX - containerRect.left - offsetX;
+  let y = e.clientY - containerRect.top - offsetY;
+
+  // Boundary limits
+  const maxX = container.clientWidth - currentItem.offsetWidth;
+  const maxY = container.clientHeight - currentItem.offsetHeight;
+
+  // Clamp inside container
+  x = Math.max(0, Math.min(x, maxX));
+  y = Math.max(0, Math.min(y, maxY));
+
+  currentItem.style.left = x + "px";
+  currentItem.style.top = y + "px";
+
 });
 
+
+/* MOUSE UP */
 document.addEventListener("mouseup", () => {
   isDragging = false;
   currentItem = null;
