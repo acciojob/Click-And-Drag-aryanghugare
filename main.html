@@ -66,82 +66,25 @@
 
 
 	const items = document.querySelectorAll(".item");
-const container = document.querySelector(".items");
-
-let currentItem = null;
-let isDragging = false;
-
-let offsetX = 0;
-let offsetY = 0;
 
 
-/* MOUSE DOWN */
-items.forEach(item => {
+items.forEach(element => {
+    element.addEventListener('mousedown', (e) => {
+        let offsetX = e.clientX - element.getBoundingClientRect().left;
+        let offsetY = e.clientY - element.getBoundingClientRect().top;
 
-  item.addEventListener("mousedown", (e) => {
+        const mouseMoveHandler = (e) => {
+            element.style.position = 'absolute';
+            element.style.left = `${e.clientX - offsetX}px`;
+            element.style.top = `${e.clientY - offsetY}px`;
+        };
 
-    // Only left click
-    if (e.button !== 0) return;
+        document.addEventListener('mousemove', mouseMoveHandler);
 
-    isDragging = true;
-    currentItem = item;
-
-    const itemRect = item.getBoundingClientRect();
-    const containerRect = container.getBoundingClientRect();
-
-    // Calculate offset
-    offsetX = e.clientX - itemRect.left;
-    offsetY = e.clientY - itemRect.top;
-
-    // Prevent selection
-    e.preventDefault();
-
-    // Convert to absolute
-    item.style.position = "absolute";
-    item.style.left = (itemRect.left - containerRect.left) + "px";
-    item.style.top = (itemRect.top - containerRect.top) + "px";
-    item.style.zIndex = 1000;
-
-  });
-
-});
-
-
-/* MOUSE MOVE */
-document.addEventListener("mousemove", (e) => {
-
-  if (!isDragging || !currentItem) return;
-
-  const containerRect = container.getBoundingClientRect();
-
-  let x = e.clientX - containerRect.left - offsetX;
-  let y = e.clientY - containerRect.top - offsetY;
-
-  // Boundary limits
-  const maxX = container.clientWidth - currentItem.offsetWidth;
-  const maxY = container.clientHeight - currentItem.offsetHeight;
-
-  // Clamp inside container
-  x = Math.max(0, Math.min(x, maxX));
-  y = Math.max(0, Math.min(y, maxY));
-
-  // Smooth movement
-  requestAnimationFrame(() => {
-    currentItem.style.left = x + "px";
-    currentItem.style.top = y + "px";
-  });
-
-});
-
-
-/* MOUSE UP */
-document.addEventListener("mouseup", () => {
-
-  if (!isDragging) return;
-
-  isDragging = false;
-  currentItem = null;
-
+        document.addEventListener('mouseup', () => {
+            document.removeEventListener('mousemove', mouseMoveHandler);
+        }, { once: true });
+    });
 });
 
 
