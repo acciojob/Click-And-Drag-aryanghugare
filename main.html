@@ -33,9 +33,79 @@
     <div class="item item24">24</div>
     <div class="item item25">25</div>
   </div>
+	<span id="console"></span>
 
 <script>
 //Your code goes here 
+// 	const items = document.querySelector(".item");
+
+// let isDragging = false;
+// let offsetX = 0;
+// let offsetY = 0;
+
+// items.forEach((item)=>{
+// 	item.addEventListener("mousedown", (e) => {
+//     isDragging = true;
+
+//     // distance between mouse and div corner
+//     offsetX = e.clientX - item.offsetLeft;
+//     offsetY = e.clientY - item.offsetTop;
+
+// 	item.addEventListener("mousemove", (e) => {
+//     if (!isDragging) return;
+
+//     item.style.left = (e.clientX - offsetX) + "px";
+//     item.style.top  = (e.clientY - offsetY) + "px";
+// });
+
+// item.addEventListener("mouseup", () => {
+//     isDragging = false;
+// });
+// });
+// })
+
+
+	const items = document.querySelectorAll(".item");
+
+let currentItem = null;
+let isDragging = false;
+let offsetX = 0;
+let offsetY = 0;
+
+items.forEach((item) => {
+
+  item.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    currentItem = item;
+
+    offsetX = e.clientX - item.offsetLeft;
+    offsetY = e.clientY - item.offsetTop;
+
+    item.style.position = "absolute"; // important
+    item.style.zIndex = 1000;
+  });
+
+});
+
+document.addEventListener("mousemove", (e) => {
+  if (!isDragging || !currentItem) return;
+
+  currentItem.style.left = (e.clientX - offsetX) + "px";
+  currentItem.style.top  = (e.clientY - offsetY) + "px";
+});
+
+document.addEventListener("mouseup", () => {
+  isDragging = false;
+  currentItem = null;
+});
+
+
+
+
+
+	
+
+	
 </script>
 
   </body>
