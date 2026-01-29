@@ -80,6 +80,9 @@ items.forEach(item => {
 
   item.addEventListener("mousedown", (e) => {
 
+    // Only left click
+    if (e.button !== 0) return;
+
     isDragging = true;
     currentItem = item;
 
@@ -90,7 +93,10 @@ items.forEach(item => {
     offsetX = e.clientX - itemRect.left;
     offsetY = e.clientY - itemRect.top;
 
-    // Convert to absolute without moving visually
+    // Prevent selection
+    e.preventDefault();
+
+    // Convert to absolute
     item.style.position = "absolute";
     item.style.left = (itemRect.left - containerRect.left) + "px";
     item.style.top = (itemRect.top - containerRect.top) + "px";
@@ -119,18 +125,24 @@ document.addEventListener("mousemove", (e) => {
   x = Math.max(0, Math.min(x, maxX));
   y = Math.max(0, Math.min(y, maxY));
 
-  currentItem.style.left = x + "px";
-  currentItem.style.top = y + "px";
+  // Smooth movement
+  requestAnimationFrame(() => {
+    currentItem.style.left = x + "px";
+    currentItem.style.top = y + "px";
+  });
 
 });
 
 
 /* MOUSE UP */
 document.addEventListener("mouseup", () => {
+
+  if (!isDragging) return;
+
   isDragging = false;
   currentItem = null;
-});
 
+});
 
 
 
