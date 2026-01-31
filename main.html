@@ -65,33 +65,71 @@
 // })
 
 
-	const items = document.querySelectorAll(".item");
+const container = document.querySelector(".items");
+const cubes = document.querySelectorAll(".item");
 
+let selected = null;
+let offsetX = 0;
+let offsetY = 0;
 
-items.forEach(element => {
-    element.addEventListener('mousedown', (e) => {
-        let offsetX = e.clientX - element.getBoundingClientRect().left;
-        let offsetY = e.clientY - element.getBoundingClientRect().top;
+cubes.forEach(cube => {
 
-        const mouseMoveHandler = (e) => {
-            element.style.position = 'absolute';
-            element.style.left = `${e.clientX - offsetX}px`;
-            element.style.top = `${e.clientY - offsetY}px`;
-        };
+  cube.addEventListener("mousedown", (e) => {
 
-        document.addEventListener('mousemove', mouseMoveHandler);
+    selected = cube;
 
-        document.addEventListener('mouseup', () => {
-            document.removeEventListener('mousemove', mouseMoveHandler);
-        }, { once: true });
-    });
+    // Make absolute
+    cube.style.position = "absolute";
+    cube.style.zIndex = 1000;
+
+    // Mouse offset
+    offsetX = e.clientX - cube.offsetLeft;
+    offsetY = e.clientY - cube.offsetTop;
+
+    document.addEventListener("mousemove", move);
+    document.addEventListener("mouseup", drop);
+  });
+
 });
 
 
+function move(e) {
+
+  if (!selected) return;
+
+  let x = e.clientX - offsetX;
+  let y = e.clientY - offsetY;
+
+  // Container boundaries
+  const maxX =
+    container.offsetWidth - selected.offsetWidth;
+
+  const maxY =
+    container.offsetHeight - selected.offsetHeight;
+
+  // Clamp
+  if (x < 0) x = 0;
+  if (y < 0) y = 0;
+
+  if (x > maxX) x = maxX;
+  if (y > maxY) y = maxY;
+
+  selected.style.left = x + "px";
+  selected.style.top = y + "px";
+}
 
 
-	
+function drop() {
 
+  document.removeEventListener("mousemove", move);
+  document.removeEventListener("mouseup", drop);
+
+  if (selected) {
+    selected.style.zIndex = 1;
+  }
+
+  selected = null;
+}
 	
 </script>
 
